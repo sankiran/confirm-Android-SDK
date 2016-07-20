@@ -54,25 +54,42 @@ Capturing a document requires the use of `ConfirmCapture`. This utility is respo
 
 #### Sample
 ```java
-public class IntroFragment extends Fragment implements ConfirmCaptureDelegate, ConfirmSubmitDelegate { {
-  private ConfirmCapture confirmCapture = null;
+import io.confirm.confirmsdk.ConfirmCapture;
+import io.confirm.confirmsdk.ConfirmCaptureListener;
+import io.confirm.confirmsdk.ConfirmPayload;
+import io.confirm.confirmsdk.ConfirmSubmitDelegate;
+import io.confirm.confirmsdk.ConfirmSubmitTask;
+import io.confirm.confirmsdk.IdModel;
+import io.confirm.confirmsdk.taskmanager.ConfirmTaskManager;
+
+public class SampleActivity extends AppCompatActivity implements ConfirmCaptureListener, ConfirmSubmitDelegate {
+
+  private String TAG = "SampleActivity";
+  private ConfirmCapture mConfirmCapture = null;
+  private Button showIDButton = null;
   
   @Override
-  public void onViewCreated(View v, Bundle savedInstanceState) {
-    // ConfirmCapture will be opened on the button click
-    Button button = (Button)v.findViewById(R.id.try_now_button);
-    final IntroFragment self = this;
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-    button.setOnClickListener(new View.OnClickListener() {
+    setContentView(io.confirm.sample.R.layout.activity_sample);
+
+    showIDButton = (Button)findViewById(io.confirm.sample.R.id.button);
+
+    showIDButton.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void onClick(View v) {
-        mConfirmCapture = new ConfirmCapture();
-        mConfirmCapture.delegate = self;
-
-        // the second parameter is the ID of the view that we want to put our UX into
-        mConfirmCapture.beginCapture(getActivity(), R.id.container);
+      public void onClick(View view) {
+        showIDButton.setVisibility(View.INVISIBLE);
+        ConfirmTaskManager.getInstance().beginConfirmCapture(ConfirmCapture.TAG, SampleActivity.this);
       }
     });
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    ConfirmTaskManager.getInstance().deregisterConfirmCaptureListener(ConfirmCapture.TAG);
   }
   
   // ------------------- ConfirmCaptureDelegate methods -------------------
@@ -120,21 +137,18 @@ public void onConfirmSubmitError(final String error) {
 }
 
 public void onConfirmSubmitSuccess(final IdModel model) {
-  final Activity activity = getActivity();
-  if (activity != null) {
-    activity.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (model.didPass())
-          // Request completed - document deamed authentic
-        else if (model.didFail())
-          // Request completed - document deamed potentially fraudulent
-        else
-          // Request completed, but Confirm was unable to provide an authentication status for
-          // the document. This is usually due to image or document damage
+  runOnUiThread(new Runnable() {
+    @Override
+    public void run() {
+      if (model.didPass())
+        // Request completed - document deamed authentic
+      else if (model.didFail())
+        // Request completed - document deamed potentially fraudulent
+      else
+        // Request completed, but Confirm was unable to provide an authentication status for
+        // the document. This is usually due to image or document damage
       }
-    });
-  }
+  });
 }
 // ...
 ```
