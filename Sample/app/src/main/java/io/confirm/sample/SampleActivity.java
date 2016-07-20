@@ -42,7 +42,7 @@ public class SampleActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 showIDButton.setVisibility(View.INVISIBLE);
-                ConfirmTaskManager.getInstance().beginConfirmaCapture(
+                ConfirmTaskManager.getInstance().beginConfirmCapture(
                         ConfirmCapture.TAG, SampleActivity.this);
             }
         });
