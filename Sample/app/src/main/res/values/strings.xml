@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Sample</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="address">Address</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="zip">Zip</string>
+    <string name="dob">DOB</string>
+    <string name="iss_type">Type</string>
+    <string name="iss_state">State</string>
+    <string name="number">Number</string>
+    <string name="issued">Date Issued</string>
+    <string name="expiration">Expiration</string>
+</resources>
