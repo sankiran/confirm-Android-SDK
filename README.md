@@ -35,9 +35,11 @@ Seeing how someone else is using the SDK is the easiest way to learn. To see the
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-<!-- Confirm SDK - required -->
 <application ...>
-  <activity android:name="io.confirm.confirmsdk.ConfirmCameraActivity"/>
+<!-- Confirm SDK - required -->
+        <activity
+            android:name="io.confirm.confirmsdk.ConfirmCameraActivity"
+            android:screenOrientation="portrait" />
 </application>
 ```
 
