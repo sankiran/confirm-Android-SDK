@@ -27,7 +27,9 @@
         </activity>
 
         <!-- Confirm SDK additions vvv -->
-        <activity android:name="io.confirm.confirmsdk.ConfirmCameraActivity"/>
+        <activity
+            android:name="io.confirm.confirmsdk.ConfirmCameraActivity"
+            android:screenOrientation="portrait" />
         <!-- Confirm SDK additions ^^^ -->
 
     </application>
