@@ -1,4 +1,4 @@
-#![Confirm logo](https://s3-us-west-2.amazonaws.com/confirm.public/web-images/confirm-logo_43x34.png) Confirm.io (BETA)
+#![Confirm logo](https://s3-us-west-2.amazonaws.com/confirm.public/web-images/confirm-logo_43x34.png) Confirm.io
 
 [Confirm.io](http://www.confirm.io/) provides simple, safe, and secure mobile ID authentication solutions. Our cloud API and paired image capture SDK empower applications to more seamlessly collect customer information and authenticate the identity of their users. 
 
@@ -7,8 +7,9 @@ This SDK requires an API key issued by Confirm.io in order to submit documents t
 ## Requirements
 
 * Rear-facing camera
-* Android SDK version 21 or later (Support of earlier SDK versions coming soon!)
-* armeabi-v7a, arm64-v8, x86, or x86_64 processor
+* Android SDK version 14 or later
+* 5 megapixel camera or better
+* arm7 (armeabi-v7a) processor or later
 
 ## Sample app
 
@@ -38,7 +39,7 @@ Seeing how someone else is using the SDK is the easiest way to learn. To see the
 <application ...>
 <!-- Confirm SDK - required -->
         <activity
-            android:name="io.confirm.confirmsdk.ConfirmCameraActivity"
+            android:name="io.confirm.confirmsdk.ConfirmCamera1Activity"
             android:screenOrientation="portrait" />
 </application>
 ```
@@ -55,6 +56,7 @@ The SDK is split into two core components:
 Capturing a document requires the use of `ConfirmCapture`. This utility is responsible for opening the video stream, overlaying the framing and responsive user messaging, detecting if the document is aligned with the frame, and triggering automatic capture. As it completes, `ConfirmCapture` will populate a `ConfirmPayload` object which retains the details of the capture to be submitted to the Confirm API. 
 
 #### Sample
+*Some code snippets are provided. See included sample app for a comprehensive example.*
 ```java
 import io.confirm.confirmsdk.ConfirmCapture;
 import io.confirm.confirmsdk.ConfirmCaptureListener;
@@ -73,25 +75,22 @@ public class SampleActivity extends AppCompatActivity implements ConfirmCaptureL
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    
+    /* It's important to present ConfirmSDK UI elements fullscreen */
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-    setContentView(io.confirm.sample.R.layout.activity_sample);
+    setContentView(com.bundle.sample.R.layout.activity_sample);
 
-    showIDButton = (Button)findViewById(io.confirm.sample.R.id.button);
+    showIDButton = (Button)findViewById(com.bundle.sample.R.id.button);
 
     showIDButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         showIDButton.setVisibility(View.INVISIBLE);
-        ConfirmTaskManager.getInstance().beginConfirmCapture(ConfirmCapture.TAG, SampleActivity.this);
+        
+        ConfirmCapture.getInstance().beginCapture(this);
       }
     });
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    ConfirmTaskManager.getInstance().deregisterConfirmCaptureListener(ConfirmCapture.TAG);
   }
   
   // ------------------- ConfirmCaptureDelegate methods -------------------
@@ -119,15 +118,15 @@ The code containing verification API is located in the object `ConfirmSubmit`.
 To set the API key:
 
 ```obj-c
-ConfirmSubmitTask task = new ConfirmSubmitTask(payload, "{YOUR_API_KEY_HERE");
+ConfirmSubmitTask task = new ConfirmSubmitTask(payload, "{YOUR_API_KEY_HERE}");
 ```
 
 #### Sample
-
+*Some code snippets are provided. See included sample app for a comprehensive example.*
 ```java
 // ...
 private void doSubmit(ConfirmPayload payload) {
-  String apiKey = "4bfb21eb-7139-4820-95f7-e12d06556a2d";
+  String apiKey = "{YOUR_API_KEY_HERE}";
   ConfirmSubmitTask task = new ConfirmSubmitTask(payload, apiKey);
   task.delegate = this;
   task.execute();
