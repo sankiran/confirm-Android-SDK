@@ -38,9 +38,9 @@ Seeing how someone else is using the SDK is the easiest way to learn. To see the
 
 <application ...>
 <!-- Confirm SDK - required -->
-        <activity
-            android:name="io.confirm.confirmsdk.ConfirmCamera1Activity"
-            android:screenOrientation="portrait" />
+    <activity
+		android:name="io.confirm.confirmsdk.ConfirmCamera1Activity"
+		android:screenOrientation="landscape" />
 </application>
 ```
 
@@ -56,53 +56,49 @@ The SDK is split into two core components:
 Capturing a document requires the use of `ConfirmCapture`. This utility is responsible for opening the video stream, overlaying the framing and responsive user messaging, detecting if the document is aligned with the frame, and triggering automatic capture. As it completes, `ConfirmCapture` will populate a `ConfirmPayload` object which retains the details of the capture to be submitted to the Confirm API. 
 
 #### Sample
-*Some code snippets are provided. See included sample app for a comprehensive example.*
+*Some brief code snippets are provided. See included sample app for a comprehensive example.*
 ```java
 import io.confirm.confirmsdk.ConfirmCapture;
-import io.confirm.confirmsdk.ConfirmCaptureListener;
 import io.confirm.confirmsdk.ConfirmPayload;
 import io.confirm.confirmsdk.ConfirmSubmitDelegate;
 import io.confirm.confirmsdk.ConfirmSubmitTask;
 import io.confirm.confirmsdk.IdModel;
-import io.confirm.confirmsdk.taskmanager.ConfirmTaskManager;
 
-public class SampleActivity extends AppCompatActivity implements ConfirmCaptureListener, ConfirmSubmitDelegate {
+public class IntroFragment extends Fragment implements ConfirmSubmitDelegate {
 
-  private String TAG = "SampleActivity";
-  private ConfirmCapture mConfirmCapture = null;
-  private Button showIDButton = null;
+  private String TAG = "IntroFragment";
+  private Activity mActivity = null;
+  private Button mTryButton = null;
   
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    
-    /* It's important to present ConfirmSDK UI elements fullscreen */
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    /* mActivity must be initialized before using ConfirmSDK */
+    mActivity = getActivity();
+    return inflater.inflate(R.layout.fragment_intro, container, false);
+  }
 
-    setContentView(com.bundle.sample.R.layout.activity_sample);
-
-    showIDButton = (Button)findViewById(com.bundle.sample.R.id.button);
-
-    showIDButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        showIDButton.setVisibility(View.INVISIBLE);
-        
-        ConfirmCapture.getInstance().beginCapture(this);
-      }
-    });
+  @Override
+    public void onViewCreated(View v, Bundle savedInstanceState) {
+        mTryButton = (Button)v.findViewById(R.id.check_id_button);
+        mTryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              /* -----This is where we start the ConfirmSDK capture session ----- */
+              ConfirmCapture.getInstance().beginCapture(mActivity);
+            }
+        });
   }
   
-  // ------------------- ConfirmCaptureDelegate methods -------------------
-  @Override
+  /* -----ConfirmSDK Callback----- */
+  /* This gets called from ConfirmSDK when capture is completed */
   public void onConfirmCaptureDidComplete(ConfirmPayload payload) {
-    // ConfirmCapture completed, and payload is ready to be sent to Confirm's cloud
-    doSubmit(payload); // Method contents shown below
+    // Payload is ready to be sent to Confirm's cloud
+    doSubmit(payload);
   }
   
-  @Override
+  /* This gets called from ConfirmSDK when the capture is dismissed */
   public void onConfirmCaptureDidCancel() {
-    // Capture was dismissed without capturing an image
+    // Optional for cancel conditions (user pressed back, etc)
   }
 }
 ```
@@ -117,12 +113,12 @@ The code containing verification API is located in the object `ConfirmSubmit`.
 
 To set the API key:
 
-```obj-c
+```java
 ConfirmSubmitTask task = new ConfirmSubmitTask(payload, "{YOUR_API_KEY_HERE}");
 ```
 
 #### Sample
-*Some code snippets are provided. See included sample app for a comprehensive example.*
+*Some brief code snippets are provided. See included sample app for a comprehensive example.*
 ```java
 // ...
 private void doSubmit(ConfirmPayload payload) {
@@ -132,24 +128,17 @@ private void doSubmit(ConfirmPayload payload) {
   task.execute();
 }
 
-// ------------------- ConfirmSubmitDelegate methods -------------------
 public void onConfirmSubmitError(final String error) {
-  Log.e(TAG, "onConfirmSubmitError = (" + error + ")");
+    // A submit error occured
 }
 
 public void onConfirmSubmitSuccess(final IdModel model) {
-  runOnUiThread(new Runnable() {
-    @Override
-    public void run() {
-      if (model.didPass())
-        // Request completed - document deamed authentic
-      else if (model.didFail())
-        // Request completed - document deamed potentially fraudulent
-      else
-        // Request completed, but Confirm was unable to provide an authentication status for
-        // the document. This is usually due to image or document damage
-      }
-  });
+  if (mActivity != null) {
+    if (model.didPass() || model.didFail())
+      // Success - Use the model
+    else
+      // Failure or did not pass
+  }
 }
 // ...
 ```

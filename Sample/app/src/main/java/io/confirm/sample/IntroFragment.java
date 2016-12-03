@@ -15,17 +15,17 @@ import io.confirm.confirmsdk.ConfirmCapture;
 import io.confirm.confirmsdk.ConfirmPayload;
 import io.confirm.confirmsdk.ConfirmSubmitDelegate;
 import io.confirm.confirmsdk.ConfirmSubmitTask;
+import io.confirm.confirmsdk.IdModel;
 
 public class IntroFragment extends Fragment implements ConfirmSubmitDelegate {
-    //implements ConfirmCaptureListener, ConfirmSubmitDelegate {
 
     private String TAG = "IntroFragment";
 	private Activity mActivity = null;
     private Button mTryButton = null;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		/* mActivity must be initialized before using ConfirmSDK */
 		mActivity = getActivity();
         return inflater.inflate(R.layout.fragment_intro, container, false);
     }
@@ -36,6 +36,7 @@ public class IntroFragment extends Fragment implements ConfirmSubmitDelegate {
         mTryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+				/* -----This is where we start the ConfirmSDK capture session ----- */
 				ConfirmCapture.getInstance().beginCapture(mActivity);
             }
         });
@@ -44,36 +45,38 @@ public class IntroFragment extends Fragment implements ConfirmSubmitDelegate {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        //ConfirmTaskManager.getInstance().deregisterConfirmCaptureListener(ConfirmCapture.TAG);
     }
 
+	/* -----ConfirmSDK Callback----- */
+	/* This gets called from ConfirmSDK when capture is completed */
 	public void onConfirmCaptureDidComplete(ConfirmPayload payload) {
+		// Payload is ready to be sent to Confirm's cloud
 		doSubmit(payload);
 	}
 
+	/* This gets called from ConfirmSDK when the capture is dismissed */
 	public void onConfirmCaptureDidCancel() {
-
+		// Optional for cancel conditions (user pressed back, etc)
 	}
 
     private void doSubmit(ConfirmPayload payload) {
-        String apiKey = "{YOUR_API_KEY}";
+        String apiKey = "4bfb21eb-7139-4820-95f7-e12d06556a2d";
 
         ConfirmSubmitTask task = new ConfirmSubmitTask(payload, apiKey);
-        task.delegate = this;
+		task.delegate = this;
         task.execute();
 
 		setButtonVisibility(false);
         showToast("Submitting images please be patient...");
     }
 
-	// ------------------- ConfirmSubmitDelegate methods -------------------
 	public void onConfirmSubmitError(final String error) {
 		Log.e(TAG, "onConfirmSubmitError = (" + error + ")");
 		showToast(error);
 		setButtonVisibility(true);
 	}
 
-	public void onConfirmSubmitSuccess(final io.confirm.confirmsdk.IdModel model) {
+	public void onConfirmSubmitSuccess(final IdModel model) {
 		if (mActivity != null) {
 				if (model.didPass() || model.didFail())
 					showResults(model);
@@ -83,8 +86,7 @@ public class IntroFragment extends Fragment implements ConfirmSubmitDelegate {
 		}
 	}
 
-    // ------------------- demo stuff -------------------
-    private void showResults(final io.confirm.confirmsdk.IdModel model) {
+	private void showResults(final IdModel model) {
 		FragmentManager fm = getActivity().getFragmentManager();
 		ResultFragment fragment =
 				(ResultFragment)fm.findFragmentById(R.id.confirm_result_fragment);
