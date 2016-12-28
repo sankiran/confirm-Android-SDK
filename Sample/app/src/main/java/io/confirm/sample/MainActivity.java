@@ -1,10 +1,5 @@
 package io.confirm.sample;
 
-import io.confirm.confirmsdk.ConfirmCapture;
-import io.confirm.confirmsdk.ConfirmConstants;
-import io.confirm.confirmsdk.ConfirmPayload;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,15 +24,4 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == ConfirmConstants.INTENT_COMPLETE_CAPTURE_REQUEST_CODE) {
-			ConfirmPayload payload = ConfirmCapture.getInstance().getPayload();
-			mFragment.onConfirmCaptureDidComplete(payload);
-		}
-    }
-
 }

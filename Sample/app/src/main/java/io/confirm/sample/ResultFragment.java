@@ -13,10 +13,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 
-import io.confirm.confirmsdk.IdBioModel;
-import io.confirm.confirmsdk.IdClassificationModel;
-import io.confirm.confirmsdk.IdIssuanceModel;
-import io.confirm.confirmsdk.IdModel;
+import io.confirm.confirmsdk.models.*;
 
 public class ResultFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

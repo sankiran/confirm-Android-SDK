@@ -1,34 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.confirm.sample">
+		  package="io.confirm.sample">
 
-    <!-- Confirm SDK additions vvv -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+	<uses-sdk android:minSdkVersion="14"/>
 
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+	<!-- Confirm SDK additions vvv -->
+	<!-- Permission to vibrate - recommended, allows vibration feedback on scan -->
+	<uses-permission android:name="android.permission.VIBRATE"/>
 
-    <!-- Confirm SDK additions ^^^ -->
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".Application"
-        >
+	<!-- Permission to use camera - required -->
+	<uses-permission android:name="android.permission.CAMERA"/>
 
-        <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
-        <!-- Confirm SDK additions ^^^ -->
+	<uses-feature android:name="android.hardware.camera"/>
+	<uses-feature android:name="android.hardware.camera.autofocus"/>
+
+	<!-- Permission to access a network - required -->
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+	<!-- Permission to access a storage write - required -->
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+	<!-- Confirm SDK additions ^^^ -->
+	<application
+		android:name=".Application"
+		android:allowBackup="true"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:supportsRtl="true"
+		android:theme="@style/AppTheme">
+
+		<activity
+			android:name=".MainActivity"
+			android:screenOrientation="portrait">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+		</activity>
+
+		<!-- Confirm SDK - required -->
+		<activity
+			android:name="io.confirm.confirmsdk.ConfirmCameraActivity"
+			android:screenOrientation="landscape"/>
+	</application>
 </manifest>
