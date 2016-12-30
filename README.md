@@ -150,6 +150,13 @@ To set the API key:
 ConfirmSubmitTask task = new ConfirmSubmitTask(submitListener, payload, "{YOUR_API_KEY_HERE}");
 ```
 
+To cleanup the capture data after submission:
+
+```java
+ConfirmCapture.getInstance().cleanup();
+```
+*Note: It is important to call `cleanup` after the submission to remove unnecessary data from the device and prepare a clean environment for the next capture.*
+
 #### Sample
 *Some code snippets are provided. See included sample app for a comprehensive example.*
 
@@ -172,6 +179,7 @@ private void doSubmit(ConfirmPayload payload) {
  */
 public void onConfirmSubmitError(final String error) {
 	Log.e(TAG, "onConfirmSubmitError = (" + error + ")");
+	ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 }
 
 /**
@@ -191,6 +199,8 @@ public void onConfirmSubmitSuccess(final IdModel model) {
 		// Request completed, but Confirm was unable to provide an authentication status for
 		// the document. This is usually due to image or document damage
 	}
+	
+	ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 }
 // ...
 ```

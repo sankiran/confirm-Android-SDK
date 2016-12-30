@@ -78,6 +78,7 @@ public class IntroFragment extends Fragment
 		Log.e(TAG, "onConfirmSubmitError = (" + error + ")");
 		showToast(error);
 		setButtonVisibility(true);
+		ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 	}
 
 	/**
@@ -103,6 +104,7 @@ public class IntroFragment extends Fragment
 			}
 			setButtonVisibility(true);
 		}
+		ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 	}
 
 	/**
