@@ -16,6 +16,7 @@ import io.confirm.confirmsdk.ConfirmPayload;
 import io.confirm.confirmsdk.ConfirmCaptureListener;
 import io.confirm.confirmsdk.ConfirmSubmitListener;
 import io.confirm.confirmsdk.ConfirmSubmitTask;
+import io.confirm.confirmsdk.models.FaceVerifyResponse;
 import io.confirm.confirmsdk.models.IdModel;
 
 public class IntroFragment extends Fragment
@@ -46,6 +47,8 @@ public class IntroFragment extends Fragment
         mTryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+				/* Use enableFacialMatch() to turn on the facial match feature */
+				ConfirmCapture.getInstance().enableFacialMatch();
 				/* This is where we start the ConfirmSDK capture session */
 				ConfirmCapture.getInstance().beginCapture(mCaptureListener, mActivity);
             }
@@ -78,23 +81,25 @@ public class IntroFragment extends Fragment
 		Log.e(TAG, "onConfirmSubmitError = (" + error + ")");
 		showToast(error);
 		setButtonVisibility(true);
+
 		ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 	}
 
 	/**
 	 * Callback from ConfirmSDK after submitting the result and received the result.
-	 * @param model
+	 * @param idModel
+	 * @param faceModel
 	 */
 	@Override
-	public void onConfirmSubmitSuccess(final IdModel model) {
+	public void onConfirmSubmitSuccess(final IdModel idModel, final FaceVerifyResponse faceModel) {
 		if (mActivity != null) {
-			if (model.didPass()) {
+			if (idModel.didPass()) {
 				// Request completed - document deemed authentic
-				showResults(model);
+				showResults(idModel, faceModel);
 			}
-			else if (model.didFail()) {
+			else if (idModel.didFail()) {
 				// Request completed - document deemed potentially fraudulent
-				showResults(model);
+				showResults(idModel, faceModel);
 			}
 			else {
 				// Request completed, but Confirm was unable to provide an authentication status for
@@ -121,15 +126,35 @@ public class IntroFragment extends Fragment
         showToast("Submitting images please be patient...");
     }
 
-    // ------------------- sample app part -------------------
-    private void showResults(final IdModel model) {
+	/**
+	 * Callback from ConfirmSDK when uploading process started.
+	 */
+	@Override
+	public void onConfirmUploadProgressStart() {
+
+	}
+
+	/**
+	 * Callback from ConfirmSDK when uploading process finished.
+	 */
+	@Override
+	public void onConfirmUploadProgressFinish() {
+
+	}
+
+	/**
+	 * Show results once the request is completed.
+	 * @param idModel
+	 * @param faceModel
+	 */
+    private void showResults(final IdModel idModel, FaceVerifyResponse faceModel) {
 		FragmentManager fm = getActivity().getFragmentManager();
 		ResultFragment fragment =
-				(ResultFragment)fm.findFragmentById(R.id.confirm_result_fragment);
+				(ResultFragment)fm.findFragmentById(R.id.result_fragment);
 
 		if (fragment == null) {
 			try {
-				fragment = ResultFragment.newInstance(model);
+				fragment = ResultFragment.newInstance(idModel, faceModel);
 				fm.beginTransaction()
 						.add(R.id.container, fragment)
 						.addToBackStack("Results")

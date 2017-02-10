@@ -70,6 +70,8 @@ Capturing a document requires the use of `ConfirmCapture`. This utility is respo
 
 As it completes, `ConfirmCapture` will populate a `ConfirmPayload` object which retains the details of the capture to be submitted to the Confirm API. 
 
+To enable facial match, use `ConfirmCapture.getInstance().enableFacialMatch();` flag to enable the capture process specific to taking a "selfie" to match to the face on the front side of the ID. Without the flag, it will not process the "selfie" mode.
+
 #### Sample
 *Some code snippets are provided. See included sample app for a comprehensive example.*
 *Full source code is located in [here](https://github.com/confirm-io/confirm-Android-SDK-staging/blob/master/Sample/app/src/main/java/io/confirm/sample/IntroFragment.java).*
@@ -92,7 +94,7 @@ public class SampleActivity extends AppCompatActivity
 	private ConfirmCaptureListener mCaptureListener = null;
 	private ConfirmSubmitListener mSubmitListener = null;
   
-	private Button showIDButton = null;
+	private Button mTryButton = null;
   
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,11 +108,13 @@ public class SampleActivity extends AppCompatActivity
 		
 		setContentView(com.bundle.sample.R.layout.activity_sample);
 
-		showIDButton = (Button)findViewById(com.bundle.sample.R.id.button);
+		mTryButton = (Button)findViewById(com.bundle.sample.R.id.button);
 
-		showIDButton.setOnClickListener(new View.OnClickListener() {
+		mTryButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view){
+				/* Use enableFacialMatch() to turn on the facial match feature */
+				ConfirmCapture.getInstance().enableFacialMatch();
 				/* This is where we start the ConfirmSDK capture session */
 				ConfirmCapture.getInstance().beginCapture(mListener, mActivity);
 			}
@@ -177,6 +181,7 @@ private void doSubmit(ConfirmPayload payload) {
  * Callback from ConfirmSDK after submitting the result and received an error.
  * @param error Error message
  */
+@Override
 public void onConfirmSubmitError(final String error) {
 	Log.e(TAG, "onConfirmSubmitError = (" + error + ")");
 	ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
@@ -184,16 +189,18 @@ public void onConfirmSubmitError(final String error) {
 
 /**
  * Callback from ConfirmSDK after submitting the result and received the result.
- * @param model
+ * @param idModel
+ * @param faceModel
  */
-public void onConfirmSubmitSuccess(final IdModel model) {
-	if (model.didPass()) {
+@Override
+public void onConfirmSubmitSuccess(final IdModel idModel, final FaceVerifyResponse faceModel) {
+	if (idModel.didPass()) {
 		// Request completed - document deamed authentic
-		showResults(model);
+		showResults(idModel, faceModel);
 	}
-	else if (model.didFail()) {
+	else if (idModel.didFail()) {
 		// Request completed - document deamed potentially fraudulent
-		showResults(model);
+		showResults(idModel, faceModel);
 	}
 	else {
 		// Request completed, but Confirm was unable to provide an authentication status for
@@ -203,4 +210,23 @@ public void onConfirmSubmitSuccess(final IdModel model) {
 	ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 }
 // ...
+```
+
+When submit process began, following callback is called when it began and finished.
+```java
+/**
+ * Callback from ConfirmSDK when uploading process started.
+ */
+@Override
+public void onConfirmUploadProgressStart() {
+
+}
+
+/**
+ * Callback from ConfirmSDK when uploading process finished.
+ */
+@Override
+public void onConfirmUploadProgressFinish() {
+
+}
 ```
