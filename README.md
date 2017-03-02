@@ -12,13 +12,13 @@ This SDK requires an API key issued by Confirm.io in order to submit documents t
 * arm7 (armeabi-v7a) processor or later
 * Android Studio SDK version 14 or later
 
-## Sample app
+## Sample App
 
 Seeing how someone else is using the SDK is the easiest way to learn. To see the SDK in action, feel free to check out the bundled [Sample](https://github.com/confirm-io/confirm-Android-SDK/tree/master/Sample) app.
 
 ## Setup
 
-### Manual download
+### Manual Download
 
 1. [Download latest version of the SDK](https://github.com/confirm-io/confirm-Android-SDK/archive/master.zip)
 2. Edit AndroidManifest.xml
@@ -58,7 +58,7 @@ The SDK is split into two core components:
 1. `ConfirmCapture` - Intelligent document image capture of both the front and back of the user's ID.
 2. `ConfirmSubmit` - Submission of captured imagery and data to api.confirm.io (requires API key)
 
-### Capturing the document
+### Capturing The Document
 
 Capturing a document requires the use of `ConfirmCapture`. This utility is responsible for:
 
@@ -68,7 +68,7 @@ Capturing a document requires the use of `ConfirmCapture`. This utility is respo
 -  detecting if the document is aligned with the frame
 -  triggering automatic capturing of the document
 
-As it completes, `ConfirmCapture` will populate a `ConfirmPayload` object which retains the details of the capture to be submitted to the Confirm API. 
+As it completes, `ConfirmCapture` will populate a `ConfirmPayload` object. This object retains the details of the capture for submission to the Confirm API.  
 
 To enable facial match, use `ConfirmCapture.getInstance().enableFacialMatch();` flag to enable the capture process specific to taking a "selfie" to match to the face on the front side of the ID. Without the flag, it will not process the "selfie" mode.
 
@@ -140,7 +140,7 @@ public class SampleActivity extends AppCompatActivity
 }
 ```
 
-### Submit to Confirm.io's API
+### Submit To Confirm.io's API
 
 After both the front and back of the ID have been captured, the payload can then be sent to Confirm.io's cloud API for data extraction and authentication. 
 
@@ -209,16 +209,36 @@ public void onConfirmSubmitSuccess(final IdModel idModel, final FaceVerifyRespon
 	
 	ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 }
+
+/**
+ * Callback from ConfirmSDK when submission is cancelled.
+ */
+@Override
+public void onConfirmSubmitCancel() {
+
+}
 // ...
 ```
 
-When submit process began, following callback is called when it began and finished.
+Once the submission process begins, the following callbacks are available for progress start, status, and finish. 
+
+Note that the `onConfirmUploadProgressStart()` and `onConfirmUploadProgressFinish()` will each be called once. The `onConfirmUploadProgressStatus(float progress)` callback will be called throughout the submission upload/processing cycle. This is ideal for determinate-style progress indicators and similar UI elements.
+
 ```java
 /**
  * Callback from ConfirmSDK when uploading process started.
  */
 @Override
 public void onConfirmUploadProgressStart() {
+
+}
+
+/**
+ * Callback from ConfirmSDK during uploading process.
+ * @param progress Start to end range is in [0.0, 1.0].
+ */
+@Override
+public void onConfirmUploadProgressStatus(float progress) {
 
 }
 

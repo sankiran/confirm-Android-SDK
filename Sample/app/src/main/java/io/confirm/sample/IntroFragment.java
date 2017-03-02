@@ -21,39 +21,39 @@ import io.confirm.confirmsdk.models.IdModel;
 
 public class IntroFragment extends Fragment
 		implements ConfirmCaptureListener, ConfirmSubmitListener {
-    private String TAG = "IntroFragment";
+	private String TAG = "IntroFragment";
 
 	// Must be initialized before using ConfirmSDK
 	private Activity mActivity = null;
 	private ConfirmCaptureListener mCaptureListener = null;
 	private ConfirmSubmitListener mSubmitListener = null;
 
-    private Button mTryButton = null;
+	private Button mTryButton = null;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		/* Note: mActivity, mCaptureListener, and mSubmitListner
 		MUST be initialized before using ConfirmSDK */
 		mActivity = getActivity();
 		mCaptureListener = this;
 		mSubmitListener = this;
 
-        return inflater.inflate(R.layout.fragment_intro, container, false);
-    }
+		return inflater.inflate(R.layout.fragment_intro, container, false);
+	}
 
-    @Override
-    public void onViewCreated(View v, Bundle savedInstanceState) {
-        mTryButton = (Button)v.findViewById(R.id.check_id_button);
-        mTryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+	@Override
+	public void onViewCreated(View v, Bundle savedInstanceState) {
+		mTryButton = (Button) v.findViewById(R.id.check_id_button);
+		mTryButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
 				/* Use enableFacialMatch() to turn on the facial match feature */
 				ConfirmCapture.getInstance().enableFacialMatch();
 				/* This is where we start the ConfirmSDK capture session */
 				ConfirmCapture.getInstance().beginCapture(mCaptureListener, mActivity);
-            }
-        });
-    }
+			}
+		});
+	}
 
 	/**
 	 * Callback from ConfirmSDK when the capture is completed.
@@ -113,18 +113,12 @@ public class IntroFragment extends Fragment
 	}
 
 	/**
-	 * Submit payload object to Confirm  API.
-	 * @param payload
+	 * Callback from ConfirmSDK when submission is cancelled.
 	 */
-    private void doSubmit(ConfirmPayload payload) {
-        String apiKey = "{YOUR_API_KEY_HERE}"; // Please put valid API key in here.
+	@Override
+	public void onConfirmSubmitCancel() {
 
-        ConfirmSubmitTask task = new ConfirmSubmitTask(mSubmitListener, payload, apiKey);
-        task.execute();
-
-		setButtonVisibility(false);
-        showToast("Submitting images please be patient...");
-    }
+	}
 
 	/**
 	 * Callback from ConfirmSDK when uploading process started.
@@ -143,14 +137,37 @@ public class IntroFragment extends Fragment
 	}
 
 	/**
+	 * Callback from ConfirmSDK during uploading process.
+	 * @param progress Start to end range is in [0.0, 1.0].
+	 */
+	@Override
+	public void onConfirmUploadProgressStatus(float progress) {
+
+	}
+
+	/**
+	 * Submit payload object to Confirm  API.
+	 * @param payload
+	 */
+	private void doSubmit(ConfirmPayload payload) {
+		String apiKey = "{YOUR_API_KEY_HERE}"; // Please put valid API key in here.
+
+		ConfirmSubmitTask task = new ConfirmSubmitTask(mSubmitListener, payload, apiKey);
+		task.execute();
+
+		setButtonVisibility(false);
+		showToast("Submitting images please be patient...");
+	}
+
+	/**
 	 * Show results once the request is completed.
 	 * @param idModel
 	 * @param faceModel
 	 */
-    private void showResults(final IdModel idModel, FaceVerifyResponse faceModel) {
+	private void showResults(final IdModel idModel, FaceVerifyResponse faceModel) {
 		FragmentManager fm = getActivity().getFragmentManager();
 		ResultFragment fragment =
-				(ResultFragment)fm.findFragmentById(R.id.result_fragment);
+				(ResultFragment) fm.findFragmentById(R.id.result_fragment);
 
 		if (fragment == null) {
 			try {
@@ -167,17 +184,17 @@ public class IntroFragment extends Fragment
 		}
 	}
 
-    private void showToast(final String text) {
-        if (mActivity != null) {
-            mActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast toast = Toast.makeText(mActivity, text, Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            });
-        }
-    }
+	private void showToast(final String text) {
+		if (mActivity != null) {
+			mActivity.runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					Toast toast = Toast.makeText(mActivity, text, Toast.LENGTH_LONG);
+					toast.show();
+				}
+			});
+		}
+	}
 
 	private void setButtonVisibility(final boolean show) {
 		if (mActivity != null && mTryButton != null) {
