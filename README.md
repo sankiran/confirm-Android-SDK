@@ -20,36 +20,55 @@ Seeing how someone else is using the SDK is the easiest way to learn. To see the
 
 ### Manual Download
 
-1. [Download latest version of the SDK](https://github.com/confirm-io/confirm-Android-SDK/archive/master.zip)
+1. [Download the latest version of the SDK](https://github.com/confirm-io/confirm-Android-SDK/archive/master.zip)
 2. Edit AndroidManifest.xml
 
-```xml
-<uses-sdk android:minSdkVersion="14" />
+	```xml
+	<uses-sdk android:minSdkVersion="14" />
 
-<!-- Permission to vibrate - recommended, allows vibration feedback on scan -->
-<uses-permission android:name="android.permission.VIBRATE" />
+	<!-- Permission to vibrate - recommended, allows vibration feedback on scan -->
+	<uses-permission android:name="android.permission.VIBRATE" />
 
-<!-- Permission to use camera - required -->
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-feature android:name="android.hardware.camera" />
-<uses-feature android:name="android.hardware.camera.autofocus" />
+	<!-- Permission to use camera - required -->
+	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-feature android:name="android.hardware.camera" />
+	<uses-feature android:name="android.hardware.camera.autofocus" />
 
-<!-- Permission to access a network - required -->
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<!-- Permission to access a network - required -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-<!-- Permission to access a storage write - required -->
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<!-- Permission to access a storage write - required -->
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+		
+	<application ...>
+		<!-- Confirm SDK - required -->
+		<activity
+			android:name="io.confirm.confirmsdk.ConfirmCameraActivity"
+			android:configChanges="orientation|screenSize"
+			android:screenOrientation="landscape" />
+	</application>
+	```
+
+	*Note: If you are using Android Studio, make sure `app/build.gradle` has `minSdkVersion 14` as well.*
+
+3. In the Android Manifest, locate the activity used to call the SDK and add the following:
+
+	`android:configChanges="orientation|screenSize"`
 	
-<application ...>
-	<!-- Confirm SDK - required -->
-	<activity
-		android:name="io.confirm.confirmsdk.ConfirmCameraActivity"
-		android:screenOrientation="landscape" />
-</application>
-```
+	In the sample app, `MainActivity.java` is the Activity that calls the SDK, so `AndroidManifest.xml` looks like this:
 
-*Note: If you are using Android Studio, make sure `app/build.gradle` has `minSdkVersion 14` as well.*
+	```xml
+	<activity
+		android:name=".MainActivity"
+		android:configChanges="orientation|screenSize"
+		android:screenOrientation="portrait">
+		<intent-filter>
+			<action android:name="android.intent.action.MAIN"/>
+			<category android:name="android.intent.category.LAUNCHER"/>
+		</intent-filter>
+	</activity>
+	```
 
 ## Integration
 
@@ -88,24 +107,24 @@ public class SampleActivity extends AppCompatActivity
 		implements ConfirmCaptureListener, ConfirmSubmitListener {
 
 	private String TAG = "SampleActivity";
-	
+
 	// Must be initialized before using ConfirmSDK
 	private Activity mActivity = null;
 	private ConfirmCaptureListener mCaptureListener = null;
 	private ConfirmSubmitListener mSubmitListener = null;
-  
+
 	private Button mTryButton = null;
-  
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-    
+
 		/* Note: mActivity, mCaptureListener, and mSubmitListner
 		MUST be initialized before using ConfirmSDK */
 		mActivity = getActivity();
 		mCaptureListener = this;
 		mSubmitListener = this;
-		
+
 		setContentView(com.bundle.sample.R.layout.activity_sample);
 
 		mTryButton = (Button)findViewById(com.bundle.sample.R.id.button);
@@ -120,7 +139,7 @@ public class SampleActivity extends AppCompatActivity
 			}
 		});
 	}
-  
+
 	/**
 	 * Callback from ConfirmSDK when the capture is completed.
 	 * @param payload Object which retains the details of the capture to be submitted to the Confirm API
@@ -170,11 +189,11 @@ ConfirmCapture.getInstance().cleanup();
  * @param payload
  */
 private void doSubmit(ConfirmPayload payload) {
-  	String apiKey = "{YOUR_API_KEY_HERE}"; // Please put valid API key in here.
-	
+	String apiKey = "{YOUR_API_KEY_HERE}"; // Please put valid API key in here.
+
 	// mSubmitListener must be initialized before.
-  	ConfirmSubmitTask task = new ConfirmSubmitTask(mSubmitListener, payload, apiKey);
-  	task.execute();
+	ConfirmSubmitTask task = new ConfirmSubmitTask(mSubmitListener, payload, apiKey);
+	task.execute();
 }
 
 /**
@@ -206,7 +225,7 @@ public void onConfirmSubmitSuccess(final IdModel idModel, final FaceVerifyRespon
 		// Request completed, but Confirm was unable to provide an authentication status for
 		// the document. This is usually due to image or document damage
 	}
-	
+
 	ConfirmCapture.getInstance().cleanup(); // Purge details of the capture
 }
 
