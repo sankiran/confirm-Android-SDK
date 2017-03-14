@@ -117,7 +117,7 @@ public class IntroFragment extends Fragment
 	 */
 	@Override
 	public void onConfirmSubmitCancel() {
-
+		setButtonVisibility(true);
 	}
 
 	/**
