@@ -8,8 +8,8 @@ android {
         applicationId "io.confirm.sample"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 111
-        versionName "1.4.6"
+        versionCode 115
+        versionName "1.4.10"
     }
     buildTypes {
         release {
