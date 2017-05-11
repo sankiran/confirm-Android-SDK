@@ -9,7 +9,7 @@ This SDK requires an API key issued by Confirm.io in order to submit documents t
 * Rear-facing camera
 * 5 megapixel camera or better
 * Android device OS 4.0.1 (Ice Cream Sandwich) or higher
-* arm7 (armeabi-v7a) processor or later
+* ARM7 (armeabi-v7a) or ARM64 (arm64-v8a) processor (or later). Intel is not supported. For more information, [please read the guide on ABI Management located here](https://developer.android.com/ndk/guides/abis.html)
 * Android Studio SDK version 14 or later
 
 ## Sample App
