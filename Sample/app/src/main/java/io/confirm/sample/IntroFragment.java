@@ -32,7 +32,7 @@ public class IntroFragment extends Fragment
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		/* Note: mActivity, mCaptureListener, and mSubmitListner
+		/* Note: mActivity, mCaptureListener, and mSubmitListener
 		MUST be initialized before using ConfirmSDK */
 		mActivity = getActivity();
 		mCaptureListener = this;

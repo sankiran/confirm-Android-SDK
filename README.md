@@ -91,6 +91,12 @@ As it completes, `ConfirmCapture` will populate a `ConfirmPayload` object. This 
 
 To enable facial match, use `ConfirmCapture.getInstance().enableFacialMatch();` flag to enable the capture process specific to taking a "selfie" to match to the face on the front side of the ID. Without the flag, it will not process the "selfie" mode.
 
+*Optional:* if you require the captured image URLs (e.g. for use outside of the SDK), you may access them on the `ConfirmPayload` object. The payload object must already be populated. Consider these URLs *volatile*; they should be copied to a user-specified path prior to submitting the payload.
+
+- `fetchFrontImageURL`
+- `fetchBackImageURL`
+- `fetchSelfieImageURL`
+
 #### Sample
 *Some code snippets are provided. See included sample app for a comprehensive example.*
 *Full source code is located in [here](https://github.com/confirm-io/confirm-Android-SDK-staging/blob/master/Sample/app/src/main/java/io/confirm/sample/IntroFragment.java).*
@@ -179,6 +185,9 @@ To cleanup the capture data after submission:
 ConfirmCapture.getInstance().cleanup();
 ```
 *Note: It is important to call `cleanup` after the submission to remove unnecessary data from the device and prepare a clean environment for the next capture.*
+
+*Optional:*
+During the submission process, you may watch the progress of the submission state via `getState` on the `ConfirmSubmitTask` object. For more information, review the possible values of the enum `ConfirmSubmitState`.
 
 #### Sample
 *Some code snippets are provided. See included sample app for a comprehensive example.*
