@@ -14,8 +14,7 @@ import java.text.SimpleDateFormat;
 import io.confirm.confirmsdk.models.*;
 
 public class ResultFragment extends Fragment {
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_MODEL = "result_model";
+	private static final String RESULT_NOT_AVAILABLE = "N/A";
 
 	private IdModel mIdModel;
 	private FaceVerifyResponse mFaceModel;
@@ -89,7 +88,7 @@ public class ResultFragment extends Fragment {
 			}
 		});
 		mStatusLabel = (TextView)v.findViewById(R.id.status_label);
-		mStatusLabel.setText(mIdModel.status);
+		mStatusLabel.setText(mIdModel.getStatus());
 
 		// Face recognition
 		mFaceMatchLayout = (LinearLayout)v.findViewById(R.id.facial_recognition_layout);
@@ -101,53 +100,53 @@ public class ResultFragment extends Fragment {
 			mFaceMatchScoreLabel.setText(mFaceModel.getMatchScoreString());
 		}
 
-		IdBioModel bio = mIdModel.identity.bio;
-		IdClassificationModel classification = mIdModel.identity.classification;
-		IdIssuanceModel issuance = mIdModel.identity.issuance;
+		IdBioModel bio = mIdModel.getIdentity().getBio();
+		IdClassificationModel classification = mIdModel.getIdentity().getClassification();
+		IdIssuanceModel issuance = mIdModel.getIdentity().getIssuance();
 
 		mFirstNameLabel = (TextView)v.findViewById(R.id.first_name);
-		mFirstNameLabel.setText(bio.firstName);
+		mFirstNameLabel.setText(bio.getFirstName());
 		mLastNameLabel = (TextView)v.findViewById(R.id.last_name);
-		mLastNameLabel.setText(bio.lastName);
+		mLastNameLabel.setText(bio.getLastName());
 		mAddressLabel = (TextView)v.findViewById(R.id.address);
-		mAddressLabel.setText(bio.address);
+		mAddressLabel.setText(bio.getAddress());
 		mCityLabel = (TextView)v.findViewById(R.id.city);
-		mCityLabel.setText(bio.city);
+		mCityLabel.setText(bio.getCity());
 		mStateLabel = (TextView)v.findViewById(R.id.state);
-		mStateLabel.setText(bio.state);
+		mStateLabel.setText(bio.getState());
 		mZipLabel = (TextView)v.findViewById(R.id.zip);
-		mZipLabel.setText(bio.zip);
+		mZipLabel.setText(bio.getZIP());
 
 		SimpleDateFormat df =  new SimpleDateFormat("MM/dd/yyyy");
 
 		mDOBLabel = (TextView)v.findViewById(R.id.dob);
-		if (bio.dob != null)
-			mDOBLabel.setText(df.format(bio.dob));
+		if (bio.getDOB() != null)
+			mDOBLabel.setText(df.format(bio.getDOB()));
 
 		mIssTypeLabel = (TextView)v.findViewById(R.id.iss_type);
-		mIssTypeLabel.setText(classification.type);
+		mIssTypeLabel.setText(classification.getType());
 		mIssStateLabel = (TextView)v.findViewById(R.id.iss_state);
-		mIssStateLabel.setText(classification.state);
+		mIssStateLabel.setText(classification.getState());
 
 		mNumberLabel = (TextView)v.findViewById(R.id.number);
-		mNumberLabel.setText(issuance.number);
+		mNumberLabel.setText(issuance.getNumber());
 		mDateIssuedLabel = (TextView)v.findViewById(R.id.issued);
-		if (issuance.issued != null)
-			mDateIssuedLabel.setText(df.format(issuance.issued));
+		if (issuance.getIssued() != null)
+			mDateIssuedLabel.setText(df.format(issuance.getIssued()));
 		else
-			mDateIssuedLabel.setText("N/A");
+			mDateIssuedLabel.setText(RESULT_NOT_AVAILABLE);
 		mExpirationLabel = (TextView)v.findViewById(R.id.expiration);
-		if (issuance.expiration != null)
-			mExpirationLabel.setText(df.format(issuance.expiration));
+		if (issuance.getExpiration() != null)
+			mExpirationLabel.setText(df.format(issuance.getExpiration()));
 		else
-			mExpirationLabel.setText("N/A");
+			mExpirationLabel.setText(RESULT_NOT_AVAILABLE);
 
 		mServerLabel = (TextView)v.findViewById(R.id.server_header);
 		mFailureLayout = (LinearLayout)v.findViewById(R.id.failure_layout);
 		mFailureLabel = (TextView)v.findViewById(R.id.failure);
 
-		if (mIdModel.failureReasons.size() > 0) {
-			mFailureLabel.setText(mIdModel.failureReasons.get(0));
+		if (mIdModel.getFailureReasons().size() > 0) {
+			mFailureLabel.setText(mIdModel.getFailureReasons().get(0));
 		} else {
 			mServerLabel.setVisibility(View.INVISIBLE);
 			mFailureLayout.setVisibility(View.INVISIBLE);

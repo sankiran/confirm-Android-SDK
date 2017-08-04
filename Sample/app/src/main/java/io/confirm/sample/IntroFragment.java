@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import io.confirm.confirmsdk.ConfirmCapture;
+import io.confirm.confirmsdk.ConfirmCustomProxy;
 import io.confirm.confirmsdk.ConfirmPayload;
 import io.confirm.confirmsdk.ConfirmCaptureListener;
 import io.confirm.confirmsdk.ConfirmSubmitListener;
@@ -20,13 +21,14 @@ import io.confirm.confirmsdk.models.FaceVerifyResponse;
 import io.confirm.confirmsdk.models.IdModel;
 
 public class IntroFragment extends Fragment
-		implements ConfirmCaptureListener, ConfirmSubmitListener {
+		implements ConfirmCaptureListener, ConfirmSubmitListener, ConfirmCustomProxy {
 	private String TAG = "IntroFragment";
 
 	// Must be initialized before using ConfirmSDK
 	private Activity mActivity = null;
 	private ConfirmCaptureListener mCaptureListener = null;
 	private ConfirmSubmitListener mSubmitListener = null;
+	private ConfirmCustomProxy mCustomProxy = null;
 
 	private Button mTryButton = null;
 
@@ -37,6 +39,7 @@ public class IntroFragment extends Fragment
 		mActivity = getActivity();
 		mCaptureListener = this;
 		mSubmitListener = this;
+		mCustomProxy = this;
 
 		return inflater.inflate(R.layout.fragment_intro, container, false);
 	}
@@ -49,6 +52,8 @@ public class IntroFragment extends Fragment
 			public void onClick(View v) {
 				/* Use enableFacialMatch() to turn on the facial match feature */
 				ConfirmCapture.getInstance().enableFacialMatch();
+				/* Optional: Use setCustomProxy() to turn on custom view */
+				ConfirmCapture.getInstance().setCustomProxy(mCustomProxy);
 				/* This is where we start the ConfirmSDK capture session */
 				ConfirmCapture.getInstance().beginCapture(mCaptureListener, mActivity);
 			}
@@ -208,5 +213,53 @@ public class IntroFragment extends Fragment
 				}
 			});
 		}
+	}
+
+	/**
+	 * Set custom instruction view UI.
+	 * @param side
+	 * @return NULL if no custom view. Otherwise, return corresponding fragment.
+	 */
+	@Override
+	public Fragment getViewForInstruction(ConfirmCapture.ConfirmCameraSide side) {
+		Fragment fragment = null;
+		switch (side) {
+			case Front:
+				InstructionFragment frontInstruction = new InstructionFragment();
+				fragment = frontInstruction;
+				break;
+			case Back:
+				// Add custom Fragment in here
+				break;
+			default:
+				break;
+		}
+		return fragment;
+	}
+
+	/**
+	 * Set custom review view UI.
+	 * @param side
+	 * @return NULL if no custom view. Otherwise, return corresponding fragment.
+	 */
+	@Override
+	public Fragment getViewForReview(ConfirmCapture.ConfirmCameraSide side) {
+		Fragment fragment = null;
+		switch (side) {
+			case Front:
+				// Add custom Fragment in here
+				break;
+			case Back:
+				ReviewFragment backReview = new ReviewFragment();
+				fragment = backReview;
+				break;
+			case Selfie:
+				ReviewFragment selfieReview = new ReviewFragment();
+				fragment = selfieReview;
+				break;
+			default:
+				break;
+		}
+		return fragment;
 	}
 }
