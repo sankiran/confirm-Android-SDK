@@ -109,6 +109,13 @@ If you require the captured image URLs (e.g. for use outside of the SDK), you ma
 - `fetchBackImageURL` - back ID image URL
 - `fetchSelfieImageURL` - selfie image URL
 
+*Optional*: You may configure the capture for international documents by using a 3-letter ISO country code. If no country is supplied, the capture will default to use “USA”. Please <a href=Docs/Supported_Countries.txt target=_blank>visit this page</a> to view an example of supported countries and codes.
+
+Example:
+
+`ConfirmCapture.getInstance().setCountryCode("USA");`
+
+
 ##### Facial Matching
 To enable facial match, use the `ConfirmCapture.getInstance().enableFacialMatch();` flag. This enables the capture process specific to taking a "selfie”, matching it to the face on the front side of the ID. Without the flag, the capture will not include the "selfie" step.
 
