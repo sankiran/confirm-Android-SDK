@@ -91,7 +91,52 @@ The SDK is split into two core components for capturing and submitting:
 1. `ConfirmCapture` - Intelligent document image capture of both the front and back of the user's ID.
 2. `ConfirmSubmit` - Submission of captured imagery and data to api.confirm.io (requires API key).
 
-#### Capturing a document
+
+#### (Optional) Configuring the capture
+*Note: configuring the document's country of origin and document type are both optional.
+
+##### Configuring the document's country of origin
+You may choose to set the document's country of origin prior to starting a capture session. To configure the country, provide an ISO (3 letter) code as follows:
+
+```
+ConfirmCapture.getInstance().setCountryCode(String countryCode);
+```
+
+You can also request an updated list of supported countries from Confirm in a hash map format:
+
+```
+import io.confirm.confirmsdk.ConfirmQueryTask;
+ConfirmQueryTask queryTask = new ConfirmQueryTask();
+HashMap<String, String> countryListMap = queryTask.getCountryList(mApiKey, ""); 
+
+// Note: mApiKey is your provided API key
+```
+
+This defaults to "USA", when not provided.
+
+*This is a convenience method. For additional information on what this method returns, see the [API reference documentation](https://confirm.readme.io/reference#coveragecountries).*
+
+##### Configuring the document type
+You may choose to set the document type prior to starting a capture session. The supported document types are provided below as `ConfirmDocumentType` enum values:
+
+```
+ID1 = Identification / Driver's License
+ID3 = Passport
+```
+
+To configure the document type, provide one of the above enums as follows:
+
+```
+// Configure the session for passport capture
+ConfirmCapture.getInstance().setDocumentType(ID3);
+```
+
+This defaults to ID1, when not provided.
+
+*For additional information on the various identification card standards, please see the [IEC_7810 reference](https://en.wikipedia.org/wiki/ISO/IEC_7810).*
+
+### Capturing the document
+
 
 Capturing a document requires the use of `ConfirmCapture`. This utility is responsible for:
 
