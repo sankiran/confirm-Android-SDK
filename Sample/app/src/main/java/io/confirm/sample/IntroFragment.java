@@ -50,11 +50,17 @@ public class IntroFragment extends Fragment
 		mTryButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				/* Use enableFacialMatch() to turn on the facial match feature */
+				///* Use enableFacialMatch() to turn on the facial match feature */
 				ConfirmCapture.getInstance().enableFacialMatch();
-				/* Optional: Use setCustomProxy() to turn on custom view */
+				/* Use enableBackAuth() to turn on the back-only authentication feature */
+				//ConfirmCapture.getInstance().enableBackAuth();
+				/* Optional: Use setCustomProxy() to enable support for custom interstitial views*/
 				ConfirmCapture.getInstance().setCustomProxy(mCustomProxy);
-				/* This is where we start the ConfirmSDK capture session */
+				/* Optional: Use setCountryCode() to set a country code in ISO 3166-1 alpha-3 format */
+				ConfirmCapture.getInstance().setCountryCode("USA");
+				/* Optional: Use setDocumentType() to set document type. (Note: Please see README for information) */
+				ConfirmCapture.getInstance().setDocumentType(ConfirmCapture.ConfirmDocumentType.ID1);
+				/* This is how we begin a ConfirmSDK capture session */
 				ConfirmCapture.getInstance().beginCapture(mCaptureListener, mActivity);
 			}
 		});
@@ -62,7 +68,7 @@ public class IntroFragment extends Fragment
 
 	/**
 	 * Callback from ConfirmSDK when the capture is completed.
-	 * @param payload Object which retains the details of the capture to be submitted to the Confirm API
+	 * @param payload Object which retains the details of the capture to be submitted to the Confirm API.
 	 */
 	@Override
 	public void onConfirmCaptureDidComplete(ConfirmPayload payload) {
@@ -110,7 +116,7 @@ public class IntroFragment extends Fragment
 				// Request completed, but Confirm was unable to provide an authentication status for
 				// the document. This is usually due to image or document damage
 				// Failure
-				showToast("ID Verification could not take place.");
+				showResults(idModel, faceModel);
 			}
 			setButtonVisibility(true);
 		}

@@ -9,7 +9,8 @@ Quick Jump Navigation <br>
 -  [Get the SDK](#get-the-sdk) <br>
 -  [Configure your project](#configure) <br>
 -  [Capture and submit](#capture-and-submit) <br>
--  [Optional - Customize the user experience](#customizing)
+-  [Optional - Customize the user experience](#customizing) <br>
+-  [Optional - Back-only authentication](#backauth)
 
 <hr><br>
 
@@ -40,7 +41,6 @@ or<br>
 
 *<a href=#top>Return to top</a>*
 <hr><br>
-
 
 ## <a name=configure></a>Configure your project
 There are two steps to add the SDK to your project:
@@ -164,6 +164,24 @@ Example:
 ##### Facial Matching
 To enable facial match, use the `ConfirmCapture.getInstance().enableFacialMatch();` flag. This enables the capture process specific to taking a "selfie”, matching it to the face on the front side of the ID. Without the flag, the capture will not include the "selfie" step.
 
+##### Back-only authentication
+To enable *back-only authentication*, use the `ConfirmCapture.getInstance().enableBackAuth()` flag. For more information, see the [discussion on back-only authentication](#backauth).
+
+##### Document Type
+You may configure the type of document for capture. `ConfirmCapture.ConfirmDocumentType` provides two formats:
+
+- `ID1` - most government-issued ID cards.
+- `ID3` - passports.
+
+If no document type is supplied, the capture will default to use `ID1`. 
+
+Example:
+
+`ConfirmCapture.getInstance().setDocumentType(ConfirmCapture.ConfirmDocumentType.ID1);`
+
+*Note: When the document type is set to ID3, it only requires the front image; enabling facial match will not work.*
+
+
 #### Submitting the payload
 
 After capturing both the front and back of the ID, the payload can then be sent to Confirm’s cloud API for data extraction and authentication. 
@@ -214,5 +232,39 @@ ConfirmCapture.getInstance().setCustomProxy(mCustomProxy);
 Each method can return a `Fragment` object as a custom view. You may also return `null` if you do not want to use a custom view for a specific capture side.
 
 Please <a href=Docs/3_CustomViews.md target=_blank>click here</a> for detailed information.
+
+*<a href=#top>Return to top</a>*
+<hr><br>
+
+## <a name=backauth></a>Optional - Back-only Authentication
+
+The SDK has two different authentication mode: *full* and *back-only* authentication:
+
+- The `full authentication` workflow scans the document for a full authentication process. Government-issued IDs will have both the front and back captured. Passports will have the front captured.
+- The `back-only authentication` workflow processes the back of a government-issued ID for a streamlined validation.
+
+#### Using Back-only authentication
+
+By default, `full authentication` mode is enabled. To configure the capture session for `back-only authentication`, set the `ConfirmCapture.getInstance().enableBackAuth();` flag. This must be called before starting `beginCapture(...)` and beginning a ConfirmSDK capture session.
+
+*Note: `back-only authentication` using the back of a government-issued ID card for quick validation. The `enableFacialMatch()` flag must not be called when this mode is configured.*
+
+#### Receiving the result
+
+Both authentication modes share the same model, `IdModel`, but they populate the model with different information.
+
+To determine which information the model has, the `idModel.isFullAuth()` flag returns `true` if the model has full authentication information, or `false` if the model has back-only authentication information.
+
+The `back-only authentication` model contains information that helps ascertain if the government-issued ID is fraudulent. The model provides this result in `recommendation`:
+
+```java
+idModel.getBackAuth().getRecommendation(); // Returns a result string
+```
+
+There are three possible flags for the recommendation:
+
+- `accept` - we recommend that the user be accepted; no need to evaluate further.
+- `reject` - we recommend that the user be outright rejected; no need to evaluate further. 
+- `review` - we recommend the user resubmit their document or be evaluated through different methods; we are unable to give guidance one way or the other.
 
 *<a href=#top>Return to top</a>*

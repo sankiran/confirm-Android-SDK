@@ -79,6 +79,7 @@ public class ResultFragment extends Fragment {
 
 	@Override
 	public void onViewCreated(View v, Bundle savedInstanceState) {
+		LinearLayout resultLayout = (LinearLayout)v.findViewById(R.id.resultLayout);
 
 		mCloseButton = (Button)v.findViewById(R.id.close_button);
 		mCloseButton.setOnClickListener(new View.OnClickListener() {
@@ -88,7 +89,6 @@ public class ResultFragment extends Fragment {
 			}
 		});
 		mStatusLabel = (TextView)v.findViewById(R.id.status_label);
-		mStatusLabel.setText(mIdModel.getStatus());
 
 		// Face recognition
 		mFaceMatchLayout = (LinearLayout)v.findViewById(R.id.facial_recognition_layout);
@@ -100,56 +100,71 @@ public class ResultFragment extends Fragment {
 			mFaceMatchScoreLabel.setText(mFaceModel.getMatchScoreString());
 		}
 
-		IdBioModel bio = mIdModel.getIdentity().getBio();
-		IdClassificationModel classification = mIdModel.getIdentity().getClassification();
-		IdIssuanceModel issuance = mIdModel.getIdentity().getIssuance();
+		if (mIdModel.isFullAuth()) {
+			mStatusLabel.setText(mIdModel.getStatus());
 
-		mFirstNameLabel = (TextView)v.findViewById(R.id.first_name);
-		mFirstNameLabel.setText(bio.getFirstName());
-		mLastNameLabel = (TextView)v.findViewById(R.id.last_name);
-		mLastNameLabel.setText(bio.getLastName());
-		mAddressLabel = (TextView)v.findViewById(R.id.address);
-		mAddressLabel.setText(bio.getAddress());
-		mCityLabel = (TextView)v.findViewById(R.id.city);
-		mCityLabel.setText(bio.getCity());
-		mStateLabel = (TextView)v.findViewById(R.id.state);
-		mStateLabel.setText(bio.getState());
-		mZipLabel = (TextView)v.findViewById(R.id.zip);
-		mZipLabel.setText(bio.getZIP());
+			resultLayout.setVisibility(View.VISIBLE);
+			if (mIdModel.getIdentity() != null) {
+				IdBioModel bio = mIdModel.getIdentity().getBio();
 
-		SimpleDateFormat df =  new SimpleDateFormat("MM/dd/yyyy");
+				mFirstNameLabel = (TextView) v.findViewById(R.id.first_name);
+				mFirstNameLabel.setText(bio.getFirstName());
+				mLastNameLabel = (TextView) v.findViewById(R.id.last_name);
+				mLastNameLabel.setText(bio.getLastName());
+				mAddressLabel = (TextView) v.findViewById(R.id.address);
+				mAddressLabel.setText(bio.getAddress());
+				mCityLabel = (TextView) v.findViewById(R.id.city);
+				mCityLabel.setText(bio.getCity());
+				mStateLabel = (TextView) v.findViewById(R.id.state);
+				mStateLabel.setText(bio.getState());
+				mZipLabel = (TextView) v.findViewById(R.id.zip);
+				mZipLabel.setText(bio.getZIP());
 
-		mDOBLabel = (TextView)v.findViewById(R.id.dob);
-		if (bio.getDOB() != null)
-			mDOBLabel.setText(df.format(bio.getDOB()));
+				SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 
-		mIssTypeLabel = (TextView)v.findViewById(R.id.iss_type);
-		mIssTypeLabel.setText(classification.getType());
-		mIssStateLabel = (TextView)v.findViewById(R.id.iss_state);
-		mIssStateLabel.setText(classification.getState());
+				mDOBLabel = (TextView) v.findViewById(R.id.dob);
+				if (bio.getDOB() != null)
+					mDOBLabel.setText(df.format(bio.getDOB()));
+			}
+			if (mIdModel.getIdentity() != null) {
+				IdClassificationModel classification = mIdModel.getIdentity().getClassification();
+				mIssTypeLabel = (TextView) v.findViewById(R.id.iss_type);
+				mIssTypeLabel.setText(classification.getType());
+				mIssStateLabel = (TextView) v.findViewById(R.id.iss_state);
+				mIssStateLabel.setText(classification.getState());
+			}
+			if (mIdModel.getIdentity() != null) {
+				SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+				IdIssuanceModel issuance = mIdModel.getIdentity().getIssuance();
 
-		mNumberLabel = (TextView)v.findViewById(R.id.number);
-		mNumberLabel.setText(issuance.getNumber());
-		mDateIssuedLabel = (TextView)v.findViewById(R.id.issued);
-		if (issuance.getIssued() != null)
-			mDateIssuedLabel.setText(df.format(issuance.getIssued()));
-		else
-			mDateIssuedLabel.setText(RESULT_NOT_AVAILABLE);
-		mExpirationLabel = (TextView)v.findViewById(R.id.expiration);
-		if (issuance.getExpiration() != null)
-			mExpirationLabel.setText(df.format(issuance.getExpiration()));
-		else
-			mExpirationLabel.setText(RESULT_NOT_AVAILABLE);
+				mNumberLabel = (TextView) v.findViewById(R.id.number);
+				mNumberLabel.setText(issuance.getNumber());
+				mDateIssuedLabel = (TextView) v.findViewById(R.id.issued);
+				if (issuance.getIssued() != null)
+					mDateIssuedLabel.setText(df.format(issuance.getIssued()));
+				else
+					mDateIssuedLabel.setText(RESULT_NOT_AVAILABLE);
+				mExpirationLabel = (TextView) v.findViewById(R.id.expiration);
+				if (issuance.getExpiration() != null)
+					mExpirationLabel.setText(df.format(issuance.getExpiration()));
+				else
+					mExpirationLabel.setText(RESULT_NOT_AVAILABLE);
 
-		mServerLabel = (TextView)v.findViewById(R.id.server_header);
-		mFailureLayout = (LinearLayout)v.findViewById(R.id.failure_layout);
-		mFailureLabel = (TextView)v.findViewById(R.id.failure);
+				mServerLabel = (TextView) v.findViewById(R.id.server_header);
+				mFailureLayout = (LinearLayout) v.findViewById(R.id.failure_layout);
+				mFailureLabel = (TextView) v.findViewById(R.id.failure);
 
-		if (mIdModel.getFailureReasons().size() > 0) {
-			mFailureLabel.setText(mIdModel.getFailureReasons().get(0));
-		} else {
-			mServerLabel.setVisibility(View.INVISIBLE);
-			mFailureLayout.setVisibility(View.INVISIBLE);
+				if (mIdModel.getFailureReasons().size() > 0) {
+					mFailureLabel.setText(mIdModel.getFailureReasons().get(0));
+				} else {
+					mServerLabel.setVisibility(View.INVISIBLE);
+					mFailureLayout.setVisibility(View.INVISIBLE);
+				}
+			}
+		}
+		else {
+			resultLayout.setVisibility(View.GONE);
+			mStatusLabel.setText(mIdModel.getBackAuth().getRecommendation());
 		}
 	}
 }
